@@ -1,5 +1,6 @@
 import logging
 
+DEFAULT_SEP = ","
 
 class Policy:
     def __init__(self):
@@ -81,14 +82,39 @@ class Policy:
 
         return rule in self[sec][ptype].policy
 
-    def add_policy(self, sec, ptype, rule):
+    def add_policy(self, sec, ptype, rule) -> bool:
         """adds a policy rule to the model."""
-
+        assertion = self[sec][ptype]
         if not self.has_policy(sec, ptype, rule):
-            self[sec][ptype].policy.append(rule)
-            return True
+            assertion.policy.append(rule)
+        else:
+            return False
 
-        return False
+        if sec == "p" and assertion.priority_index >= 0:
+            try:
+                idx_insert = int(rule[assertion.priority_index])
+
+                i = len(assertion.policy) - 1
+                for i in range(i, 0, -1):
+
+                    try:
+                        idx = int(assertion.policy[i-1][assertion.priority_index])
+                    except:
+                        break
+
+                    if idx > idx_insert:
+                        assertion.policy[i] = assertion.policy[i-1]
+                    else:
+                        break
+
+                assertion.policy[i] = rule
+                assertion.policy_map[DEFAULT_SEP.join(rule)] = i
+
+            except:
+                pass
+
+        assertion.policy_map[DEFAULT_SEP.join(rule)] = len(assertion.policy) - 1
+        return True
 
     def add_policies(self, sec, ptype, rules):
         """adds policy rules to the model."""
