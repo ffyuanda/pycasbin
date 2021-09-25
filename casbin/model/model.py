@@ -90,6 +90,19 @@ class Model(Policy):
         subject_hierarchy_map: dict[str:int] = dict()
         policy_map: dict[str:[str]] = dict()
 
+        for policy in policies:
+            if len(policy) < 2:
+                raise RuntimeError("Policy g expects 2 more params")
+
+            domain = DEFAULT_DOMAIN
+            if len(policy) != 2:
+                domain = policy[2]
+
+            child = self.get_name_with_domain(domain, policy[0])
+            parent = self.get_name_with_domain(domain, policy[1])
+            policy_map[parent] = policy_map[parent].append(child)
+
+
 
     @staticmethod
     def get_name_with_domain(domain, name):
