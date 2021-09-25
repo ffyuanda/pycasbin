@@ -2,6 +2,9 @@ from . import Assertion
 from casbin import util, config
 from .policy import Policy
 
+DEFAULT_DOMAIN = ""
+DEFAULT_SEPARATOR = "::"
+
 
 class Model(Policy):
 
@@ -79,6 +82,18 @@ class Model(Policy):
         for k, v in self.items():
             for i, j in v.items():
                 self.logger.info("%s.%s: %s", k, i, j.value)
+
+    def sort_policies_by_subject_hierarchy(self):
+        pass
+
+    def get_subject_hierarchy_map(self, policies):
+        subject_hierarchy_map: dict[str:int] = dict()
+        policy_map: dict[str:[str]] = dict()
+
+
+    @staticmethod
+    def get_name_with_domain(domain, name):
+        return domain + DEFAULT_SEPARATOR + name
 
     def sort_policies_by_priority(self):
         for ptype, assertion in self["p"].items():
